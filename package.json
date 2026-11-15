@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:search": "node scripts/search-test.mjs",
     "test:race": "node scripts/race-test.mjs",
     "test:rls": "node scripts/rls-test.mjs",
     "e2e": "playwright test"

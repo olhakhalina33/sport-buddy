@@ -7,6 +7,7 @@ import { ListSkeleton } from './components/ui/Skeleton';
 import { SearchPage } from './features/search/SearchPage';
 import { CreatePage } from './features/create/CreatePage';
 import { RequestsPage } from './features/requests/RequestsPage';
+import { TrainingPage } from './features/training/TrainingPage';
 
 function RequireAuth() {
   const { session, loading } = useAuth();
@@ -44,6 +45,7 @@ export default function App() {
           <Route index element={<SearchPage />} />
           <Route path="create" element={<CreatePage />} />
           <Route path="requests" element={<RequestsPage />} />
+          <Route path="training/:id" element={<TrainingPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
