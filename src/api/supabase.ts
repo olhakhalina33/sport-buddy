@@ -1,7 +1,10 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// Підтримуємо і legacy anon key, і нову назву з панелі Supabase (publishable key).
+const key = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) as
+  | string
+  | undefined;
 
 export const isConfigured = Boolean(url && key && !url.includes('your-project-ref'));
 

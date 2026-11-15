@@ -7,6 +7,11 @@
 - **Причина:** `TextField.tsx` експортував функцію `fieldClass` поряд із компонентами; `useAuth.tsx` експортує провайдер і хуки з одного файлу.
 - **Виправлення:** `fieldClass` винесено в `src/components/ui/fieldClass.ts`; для `src/hooks/**/*.tsx` правило вимкнено в `eslint.config.js` (провайдер + хук в одному файлі — свідоме рішення).
 
+### 2. Екран «Supabase не налаштовано», хоча `.env.local` існує
+- **Текст:** на сторінці `Supabase не налаштовано. Створіть файл .env.local…`.
+- **Причина:** панель Supabase (Connect → React/Vite) пропонує змінну `VITE_SUPABASE_PUBLISHABLE_KEY`, а код читав лише `VITE_SUPABASE_ANON_KEY` → `isConfigured = false`.
+- **Виправлення:** `src/api/supabase.ts` приймає обидві назви; `.env.example` доповнено.
+
 ## Ітерації
 
 ### Крок 0 — план
