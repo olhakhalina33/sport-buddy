@@ -15,7 +15,8 @@
     "test:rls": "node scripts/rls-test.mjs",
     "test:realtime": "node scripts/realtime-test.mjs",
     "test:db": "node scripts/search-test.mjs && node scripts/race-test.mjs && node scripts/rls-test.mjs && node scripts/realtime-test.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "screenshots": "playwright test --config playwright.screens.config.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "3.9.1",
