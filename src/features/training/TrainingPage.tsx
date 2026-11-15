@@ -1,4 +1,8 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { StaleBanner } from '../../components/ui/StaleBanner';
+import { useRealtime } from '../../hooks/useRealtime';
+import { newLabel, unreadCount } from '../../api/chat';
 import { Chip } from '../../components/ui/Chip';
 import { AvatarStack } from '../../components/ui/Avatar';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -39,10 +43,64 @@ function CardSkeleton() {
   );
 }
 
+function ChatLink({ trainingId, unread }: { trainingId: string; unread: number }) {
+  return (
+    <Link
+      to={`/training/${trainingId}/chat`}
+      className="flex h-14 items-center justify-between rounded-xl border border-line bg-surface px-5 transition-colors hover:border-accent"
+    >
+      <span className="text-[16px] font-bold">Чат учасників</span>
+      <span className="text-p font-normal text-accent">
+        {unread > 0 ? `${newLabel(unread)} →` : '→'}
+      </span>
+    </Link>
+  );
+}
+
 export function TrainingPage() {
   const { id = '' } = useParams();
   const user = useUser();
   const { state, reload } = useTrainingCard(id, user.id);
+  const [unread, setUnread] = useState(0);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+
+  const isMemberNow =
+    state.status === 'ok' && (state.data.training.organizer_id === user.id || state.data.myStatus === 'confirmed');
+
+  const refreshUnread = useCallback(() => {
+    unreadCount(id).then(setUnread).catch(() => undefined);
+  }, [id]);
+
+  useEffect(() => {
+    if (isMemberNow) refreshUnread();
+  }, [isMemberNow, refreshUnread]);
+
+  // Будь-яка зміна тренування (confirmed_count) або моїх заявок → перечитати учасників (≤2 с).
+  // Кілька подій поспіль зливаємо в одне перечитування.
+  const onChange = useCallback(
+    (p: { table: string }) => {
+      if (p.table === 'messages') return refreshUnread();
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => reload().catch(() => undefined), 150);
+    },
+    [reload, refreshUnread],
+  );
+  const onReconnect = useCallback(() => {
+    reload().catch(() => undefined);
+    refreshUnread();
+  }, [reload, refreshUnread]);
+
+  const { stale } = useRealtime(
+    `training-${id}`,
+    [
+      { table: 'trainings', event: 'UPDATE', filter: `id=eq.${id}` },
+      { table: 'bookings', filter: `training_id=eq.${id}` },
+      { table: 'messages', event: 'INSERT', filter: `training_id=eq.${id}` },
+    ],
+    onChange,
+    onReconnect,
+  );
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   if (state.status === 'loading') return (<><BackLink /><CardSkeleton /></>);
   if (state.status === 'notfound') return (<><BackLink /><EmptyState title="Тренування не знайдено" /></>);
@@ -55,6 +113,7 @@ export function TrainingPage() {
 
   return (
     <article className="flex flex-col gap-5 animate-fade-up">
+      <StaleBanner show={stale} />
       <div>
         <BackLink />
         <h1 className="text-h4 break-words">{t.title}</h1>
@@ -100,6 +159,8 @@ export function TrainingPage() {
           <p className="whitespace-pre-line break-words text-p font-normal">{t.description}</p>
         </section>
       )}
+
+      {isMemberNow && <ChatLink trainingId={t.id} unread={unread} />}
 
       <BookingPanel training={t} isOrganizer={isOrganizer} myStatus={myStatus} onChanged={reload} />
     </article>

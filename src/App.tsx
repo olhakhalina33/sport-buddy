@@ -8,6 +8,7 @@ import { SearchPage } from './features/search/SearchPage';
 import { CreatePage } from './features/create/CreatePage';
 import { RequestsPage } from './features/requests/RequestsPage';
 import { TrainingPage } from './features/training/TrainingPage';
+import { ChatPage } from './features/chat/ChatPage';
 
 function RequireAuth() {
   const { session, loading } = useAuth();
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="create" element={<CreatePage />} />
           <Route path="requests" element={<RequestsPage />} />
           <Route path="training/:id" element={<TrainingPage />} />
+          <Route path="training/:id/chat" element={<ChatPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
