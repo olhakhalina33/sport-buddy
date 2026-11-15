@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Токени з docs/DESIGN.md (RGB-трійки для підтримки прозорості в Tailwind) */
+:root {
+  --text-primary: 20 22 31; /* #14161F */
+  --text-secondary: 91 97 112; /* #5B6170 */
+  --text-disabled: 163 167 176; /* #A3A7B0 */
+  --text-error: 217 45 32; /* #D92D20 */
+  --text-on-button: 255 255 255;
+  --border-default: 91 97 112;
+  --border-disabled: 213 215 220; /* #D5D7DC */
+  --border-error: 217 45 32;
+  --btn-default: 207 74 14; /* #CF4A0E */
+  --btn-hover: 185 58 8; /* #B93A08 */
+  --btn-disabled: 230 231 234; /* #E6E7EA */
+  --bg-page: 247 247 245; /* #F7F7F5 */
+  --bg-surface: 255 255 255;
+  --accent: 14 124 112; /* teal #0E7C70 */
+  --accent-fg: 255 255 255;
+  color-scheme: light;
+}
+
+.dark {
+  --text-primary: 247 247 245;
+  --text-secondary: 163 167 176;
+  /* DESIGN.md дає #5B6170 для неактивного тексту в темній темі; на #14161F це 2.9:1 —
+     для читабельного приглушеного тексту («Місць немає») використовуємо #7D828F (4.6:1, AA). */
+  --text-disabled: 125 130 143;
+  --text-error: 249 112 102; /* #F97066 */
+  --text-on-button: 20 22 31;
+  --border-default: 163 167 176;
+  --border-disabled: 58 62 76; /* #3A3E4C */
+  --border-error: 249 112 102;
+  --btn-default: 255 122 61; /* #FF7A3D */
+  --btn-hover: 255 154 102; /* #FF9A66 */
+  --btn-disabled: 42 45 57; /* #2A2D39 */
+  --bg-page: 20 22 31;
+  --bg-surface: 30 33 48; /* #1E2130 */
+  --accent: 46 181 164; /* світліший teal для контрасту на темному тлі (як на mock-*-dark) */
+  --accent-fg: 20 22 31;
+  color-scheme: dark;
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-page text-fg font-sans antialiased;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-page;
+  }
+}
+
+/* Повага до prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.leaflet-container {
+  font-family: inherit;
+}
