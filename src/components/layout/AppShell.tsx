@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { countUnreadNotifications } from '../../api/organizer';
 import { BottomNav } from '../ui/BottomNav';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -25,7 +25,11 @@ export function AppShell() {
       <header className="flex items-center justify-between px-6 pt-4">
         <span className="text-p font-bold text-brand">Sport Buddy</span>
         <div className="flex items-center gap-2">
-          {profile && <Avatar user={profile} size="sm" />}
+          {profile && (
+            <Link to="/profile" aria-label="Профіль" className="rounded-full">
+              <Avatar user={profile} size="sm" />
+            </Link>
+          )}
           <ThemeToggle />
           <button
             type="button"

@@ -8,6 +8,11 @@ test('пошук: фільтри в URL, порожній результат, с
   await expect(cards.last()).toContainText('Футбол 5×5 на Шулявці');
   await expect(cards.last()).toContainText('Місць немає');
 
+  // Рівень з профілю (olga — «Середній») підставлено як початковий фільтр; знімаємо його
+  const mid = page.getByRole('button', { name: 'Середній' });
+  await expect(mid).toHaveAttribute('aria-pressed', 'true');
+  await mid.click();
+
   // SPEC: «Велоспорт + просунутий» → «Тренувань не знайдено» + «Скинути фільтри»
   await page.getByRole('button', { name: 'Велоспорт' }).click();
   await page.getByRole('button', { name: 'Просунутий' }).click();

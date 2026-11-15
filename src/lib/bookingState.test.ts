@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cardAction } from './bookingState';
+import { cardAction, levelWarning } from './bookingState';
 
 const base = { isOrganizer: false, myStatus: null, capacity: 10, confirmedCount: 3, started: false, cancelled: false };
 
@@ -26,5 +26,24 @@ describe('кнопка картки (US 2.3)', () => {
   it('тренування почалося → не можна записатися й скасувати', () => {
     expect(cardAction({ ...base, started: true }).label).toBe('Тренування вже почалося');
     expect(cardAction({ ...base, started: true, myStatus: 'confirmed' })).toMatchObject({ canCancel: false });
+  });
+});
+
+describe('levelWarning — попередження про рівень', () => {
+  it('тренування вище за рівень користувача → попередження з текстом', () => {
+    expect(levelWarning('advanced', 'beginner')).toBe(
+      'Це тренування рівня «просунутий», твій рівень — «новачок». Все одно записатися?',
+    );
+    expect(levelWarning('intermediate', 'beginner')).not.toBeNull();
+    expect(levelWarning('advanced', 'intermediate')).not.toBeNull();
+  });
+  it('той самий або нижчий рівень → без попередження', () => {
+    expect(levelWarning('beginner', 'beginner')).toBeNull();
+    expect(levelWarning('intermediate', 'intermediate')).toBeNull();
+    expect(levelWarning('beginner', 'advanced')).toBeNull();
+    expect(levelWarning('intermediate', 'advanced')).toBeNull();
+  });
+  it('рівень користувача невідомий → без попередження', () => {
+    expect(levelWarning('advanced', null)).toBeNull();
   });
 });

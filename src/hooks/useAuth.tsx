@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../api/supabase';
 import { fetchProfile } from '../api/auth';
@@ -10,7 +10,17 @@ interface AuthState {
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthState>({ session: null, profile: null, loading: true });
+interface AuthContextValue extends AuthState {
+  /** Перечитати профіль після зміни (наприклад, рівня). */
+  refreshProfile: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  session: null,
+  profile: null,
+  loading: true,
+  refreshProfile: async () => undefined,
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ session: null, profile: null, loading: true });
@@ -32,7 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
+  const refreshProfile = useCallback(async () => {
+    const id = state.session?.user.id;
+    if (!id) return;
+    const profile = await fetchProfile(id);
+    setState((s) => ({ ...s, profile }));
+  }, [state.session]);
+
+  const value = useMemo(() => ({ ...state, refreshProfile }), [state, refreshProfile]);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

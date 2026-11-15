@@ -40,3 +40,9 @@ export async function fetchProfile(id: string): Promise<Profile | null> {
   if (error) throw toApiError(error);
   return data as Profile | null;
 }
+
+/** Змінити свій рівень (RLS: лише власний профіль; grant дозволяє оновлювати name, level, avatar_url). */
+export async function updateMyLevel(id: string, level: SkillLevel) {
+  const { error } = await supabase.from('profiles').update({ level }).eq('id', id);
+  if (error) throw toApiError(error);
+}

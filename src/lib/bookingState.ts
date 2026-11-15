@@ -1,5 +1,5 @@
-import type { BookingStatus } from '../types';
-import { BOOKING_STATUS_LABEL, T } from './labels';
+import type { BookingStatus, SkillLevel } from '../types';
+import { BOOKING_STATUS_LABEL, LEVELS, LEVEL_LABEL, T } from './labels';
 import { freeSeats } from './seats';
 
 export type CardAction =
@@ -42,4 +42,11 @@ export function cardAction(i: Input): CardAction {
     return { kind: 'disabled', label: T.noSeats, hint: 'Спробуйте інше тренування.', tone: 'error' };
   }
   return { kind: 'join', label: T.join };
+}
+
+/** Попередження перед записом, якщо рівень тренування вищий за рівень користувача. Запис не блокує. */
+export function levelWarning(trainingLevel: SkillLevel, userLevel: SkillLevel | null | undefined): string | null {
+  if (!userLevel || LEVELS.indexOf(trainingLevel) <= LEVELS.indexOf(userLevel)) return null;
+  const l = (x: SkillLevel) => LEVEL_LABEL[x].toLowerCase();
+  return `Це тренування рівня «${l(trainingLevel)}», твій рівень — «${l(userLevel)}». Все одно записатися?`;
 }

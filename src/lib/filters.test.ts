@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_RADIUS_KM, foundLabel, parseFilters, serializeFilters, toRpcParams, toggle } from './filters';
+import { DEFAULT_RADIUS_KM, EMPTY_FILTERS, foundLabel, parseFilters, resolveFilters, serializeFilters, toRpcParams, toggle } from './filters';
 
 const parse = (q: string) => parseFilters(new URLSearchParams(q));
 
@@ -57,4 +57,24 @@ describe('foundLabel', () => {
     [21, 'Знайдено 21 тренування'],
     [12, 'Знайдено 12 тренувань'],
   ])('%i', (n, s) => expect(foundLabel(n)).toBe(s));
+});
+
+describe('resolveFilters — рівень з профілю', () => {
+  const q = (s: string) => new URLSearchParams(s);
+  it('URL без фільтрів → початковий рівень з профілю', () => {
+    expect(resolveFilters(q(''), 'beginner')).toEqual({ ...EMPTY_FILTERS, levels: ['beginner'] });
+  });
+  it('URL з фільтрами має пріоритет над профілем', () => {
+    expect(resolveFilters(q('level=advanced'), 'beginner').levels).toEqual(['advanced']);
+    // будь-який фільтр в URL (навіть без рівня) вимикає підстановку
+    expect(resolveFilters(q('sport=run'), 'beginner')).toMatchObject({ sports: ['run'], levels: [] });
+  });
+  it('скинуті фільтри (level=all) не повертають рівень з профілю', () => {
+    const reset = serializeFilters(EMPTY_FILTERS);
+    expect(reset.get('level')).toBe('all');
+    expect(resolveFilters(reset, 'intermediate')).toEqual(EMPTY_FILTERS);
+  });
+  it('без профілю → звичайний розбір URL', () => {
+    expect(resolveFilters(q(''), null)).toEqual(EMPTY_FILTERS);
+  });
 });

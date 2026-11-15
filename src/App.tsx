@@ -9,6 +9,7 @@ import { CreatePage } from './features/create/CreatePage';
 import { RequestsPage } from './features/requests/RequestsPage';
 import { TrainingPage } from './features/training/TrainingPage';
 import { ChatPage } from './features/chat/ChatPage';
+import { ProfilePage } from './features/profile/ProfilePage';
 
 function RequireAuth() {
   const { session, loading } = useAuth();
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="requests" element={<RequestsPage />} />
           <Route path="training/:id" element={<TrainingPage />} />
           <Route path="training/:id/chat" element={<ChatPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

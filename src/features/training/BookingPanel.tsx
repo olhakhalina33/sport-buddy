@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { bookTraining, cancelBooking } from '../../api/bookings';
-import { cardAction } from '../../lib/bookingState';
+import { cardAction, levelWarning } from '../../lib/bookingState';
+import { useAuth } from '../../hooks/useAuth';
 import { hasStarted, isFreeCancel } from '../../lib/dates';
 import { T } from '../../lib/labels';
 import type { BookingStatus, Training } from '../../types';
@@ -20,6 +21,9 @@ export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Pro
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmLevel, setConfirmLevel] = useState(false);
+  const { profile } = useAuth();
+  const warning = levelWarning(training.level, profile?.level);
   const inFlight = useRef(false); // захист від подвійного кліку ще до перерендеру
 
   const action = cardAction({
@@ -50,6 +54,7 @@ export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Pro
 
   const join = () =>
     run(async () => {
+      setConfirmLevel(false);
       const status = await bookTraining(training.id);
       if (status === 'pending') setNotice('Заявку надіслано. Очікуйте рішення Організатора.');
     });
@@ -66,9 +71,22 @@ export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Pro
   return (
     <div className="flex flex-col gap-3">
       {action.kind === 'join' && (
-        <Button full onClick={join} loading={busy}>
+        <Button full onClick={warning ? () => setConfirmLevel(true) : join} loading={busy} disabled={confirmLevel}>
           {action.label}
         </Button>
+      )}
+      {action.kind === 'join' && confirmLevel && warning && (
+        <div role="alertdialog" aria-label="Попередження про рівень" className="rounded-2xl border border-line-off bg-surface p-4 animate-fade-up">
+          <p className="text-p">{warning}</p>
+          <div className="mt-3 flex items-center gap-4">
+            <Button onClick={join} loading={busy}>
+              Так, записатися
+            </Button>
+            <Button variant="link" onClick={() => setConfirmLevel(false)} disabled={busy}>
+              Ні
+            </Button>
+          </div>
+        </div>
       )}
       {action.kind === 'organizer' && (
         <Link

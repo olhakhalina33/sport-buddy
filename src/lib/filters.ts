@@ -30,11 +30,30 @@ export function parseFilters(params: URLSearchParams): SearchFilters {
   };
 }
 
-/** Фільтри → URL (порожні параметри не пишемо). */
+/** Параметри URL, наявність яких означає «фільтри задано явно». */
+const FILTER_KEYS = ['sport', 'level', 'lat', 'lng'] as const;
+
+export function hasUrlFilters(params: URLSearchParams): boolean {
+  return FILTER_KEYS.some((k) => params.has(k));
+}
+
+/**
+ * Фільтри екрана пошуку: якщо в URL є будь-який фільтр — URL має пріоритет,
+ * інакше початковий рівень береться з профілю.
+ */
+export function resolveFilters(params: URLSearchParams, profileLevel: SkillLevel | null | undefined): SearchFilters {
+  if (hasUrlFilters(params) || !profileLevel) return parseFilters(params);
+  return { ...EMPTY_FILTERS, levels: [profileLevel] };
+}
+
+/**
+ * Фільтри → URL. `level` пишемо завжди (`all`, якщо рівень не обрано): після будь-якої дії
+ * користувача, зокрема «Скинути фільтри», URL фіксує вибір і рівень з профілю вже не підставляється.
+ */
 export function serializeFilters(f: SearchFilters): URLSearchParams {
   const p = new URLSearchParams();
   if (f.sports.length) p.set('sport', f.sports.join(','));
-  if (f.levels.length) p.set('level', f.levels.join(','));
+  p.set('level', f.levels.length ? f.levels.join(',') : 'all');
   if (f.location) {
     p.set('lat', f.location.lat.toFixed(5));
     p.set('lng', f.location.lng.toFixed(5));

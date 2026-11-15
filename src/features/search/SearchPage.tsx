@@ -7,15 +7,18 @@ import { EmptyState, ErrorState } from '../../components/ui/States';
 import { TrainingCard } from '../../components/training/TrainingCard';
 import { LocationPicker } from './LocationPicker';
 import { searchTrainings } from '../../api/trainings';
-import { EMPTY_FILTERS, foundLabel, hasActiveFilters, parseFilters, serializeFilters, toggle } from '../../lib/filters';
+import { EMPTY_FILTERS, foundLabel, hasActiveFilters, resolveFilters, serializeFilters, toggle } from '../../lib/filters';
 import { LEVELS, LEVEL_LABEL, SPORTS, SPORT_LABEL, T } from '../../lib/labels';
+import { useAuth } from '../../hooks/useAuth';
 import type { SearchFilters, TrainingListItem } from '../../types';
 
 type State = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ok'; items: TrainingListItem[] };
 
 export function SearchPage() {
   const [params, setParams] = useSearchParams();
-  const filters = useMemo(() => parseFilters(params), [params]);
+  const { profile } = useAuth();
+  const profileLevel = profile?.level;
+  const filters = useMemo(() => resolveFilters(params, profileLevel), [params, profileLevel]);
   const [state, setState] = useState<State>({ status: 'loading' });
   const [reload, setReload] = useState(0);
 
