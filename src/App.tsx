@@ -31,7 +31,7 @@ function NotConfigured() {
       <h1 className="text-h4 mb-4">Supabase не налаштовано</h1>
       <p className="text-p text-muted">
         Створіть файл <code>.env.local</code> за зразком <code>.env.example</code> (VITE_SUPABASE_URL і
-        VITE_SUPABASE_ANON_KEY) і перезапустіть <code>npm run dev</code>.
+        VITE_SUPABASE_PUBLISHABLE_KEY) і перезапустіть <code>npm run dev</code>.
       </p>
     </main>
   );

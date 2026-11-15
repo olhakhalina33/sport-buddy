@@ -72,5 +72,5 @@ Realtime: публікація для `trainings` (зміна `confirmed_count` 
 ## Що треба зробити тобі руками (коли попрошу)
 1. Supabase: створити проєкт, вимкнути «Confirm email», дати URL і anon key → `.env.local`, застосувати міграцію й seed (SQL Editor).
 2. GitHub: створити репозиторій, запушити.
-3. Vercel: імпорт репозиторію, змінні `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+3. Vercel: імпорт репозиторію, змінні `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
 4. Додати викладача колаборатором (GitHub; Vercel — за потреби).

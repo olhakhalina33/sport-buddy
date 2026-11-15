@@ -11,7 +11,7 @@ Vite · React 18 · TypeScript (strict) · React Router · Tailwind CSS · Supab
 ## Запуск локально
 ```bash
 npm install
-cp .env.example .env.local   # вписати VITE_SUPABASE_URL і VITE_SUPABASE_ANON_KEY
+cp .env.example .env.local   # вписати VITE_SUPABASE_URL і VITE_SUPABASE_PUBLISHABLE_KEY
 npm run dev                  # http://localhost:5173
 ```
 
@@ -29,9 +29,9 @@ npm run dev                  # http://localhost:5173
 | Змінна | Де взяти |
 |---|---|
 | `VITE_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
-| `VITE_SUPABASE_ANON_KEY` | там само → `anon` `public` key |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | там само → Publishable key (`sb_publishable_…`; у старих проєктах — `anon` `public`) |
 
-Секрети — лише в `.env.local` (у `.gitignore`) і в Environment Variables на Vercel.
+Секрети — лише в `.env.local` (у `.gitignore`) і в Environment Variables на Vercel. Publishable-ключ призначений для браузера, його видно в збірці — це нормально, захист даних забезпечує RLS. Ключ `service_role` / secret у фронтенд, `.env` чи скриншоти **не вставляти ніколи**.
 
 ## База даних
 1. Supabase → SQL Editor → вставити й виконати `supabase/migrations/0001_init.sql`.
@@ -40,6 +40,8 @@ npm run dev                  # http://localhost:5173
 4. Authentication → Sign In / Providers → Email: вимкнути **Confirm email** (щоб реєстрація працювала без листа).
 
 ## Тестові акаунти (пароль для всіх: `Test1234!`)
+> Це демо-акаунти для перевірки лабораторної, а не реальна авторизація: однаковий публічний пароль — свідоме спрощення.
+
 | Email | Роль у демо-даних |
 |---|---|
 | `olga@sportbuddy.test` | Спортсмен (записана на велопрогулянку, чекає рішення на ВДНГ) |
@@ -61,7 +63,7 @@ npm run dev                  # http://localhost:5173
 | ![](docs/screenshots/02-search-light.png) | ![](docs/screenshots/03-card-organizer-dark.png) | ![](docs/screenshots/06-card-full-light.png) | ![](docs/screenshots/08-requests-dark.png) |
 
 ## Деплой (Vercel)
-`vercel.json` переписує всі шляхи на `index.html` (SPA). У Vercel: Import Project → Framework «Vite» → Environment Variables `VITE_SUPABASE_URL` і `VITE_SUPABASE_ANON_KEY` (або `VITE_SUPABASE_PUBLISHABLE_KEY`) → Deploy. У Supabase → Authentication → URL Configuration додай адресу Vercel у Site URL / Redirect URLs (для «Забули пароль?»).
+`vercel.json` переписує всі шляхи на `index.html` (SPA). У Vercel: Import Project → Framework «Vite» → Environment Variables `VITE_SUPABASE_URL` і `VITE_SUPABASE_PUBLISHABLE_KEY` → Deploy. У Supabase → Authentication → URL Configuration додай адресу Vercel у Site URL / Redirect URLs (для «Забули пароль?»).
 
 ## Суперечності в матеріалах (як вирішено)
 1. Мокапи: скасування «за 2 години» → за SPEC/vision board **12 годин**.

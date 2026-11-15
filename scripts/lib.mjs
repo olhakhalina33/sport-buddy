@@ -13,7 +13,7 @@ function loadEnv() {
 
 const env = loadEnv();
 const URL_ = env.VITE_SUPABASE_URL;
-const KEY = env.VITE_SUPABASE_ANON_KEY ?? env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY;
 export const PASSWORD = 'Test1234!';
 
 export function anonClient() {
