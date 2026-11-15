@@ -1,4 +1,6 @@
-import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { countUnreadNotifications } from '../../api/organizer';
 import { BottomNav } from '../ui/BottomNav';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,6 +9,17 @@ import { Avatar } from '../ui/Avatar';
 
 export function AppShell() {
   const { profile } = useAuth();
+  const location = useLocation();
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    if (location.pathname === '/requests') {
+      setUnread(0); // вкладку відкрито — сповіщення прочитані
+      return;
+    }
+    countUnreadNotifications().then(setUnread).catch(() => undefined);
+  }, [location.pathname]);
+
   return (
     <div className="mx-auto min-h-dvh max-w-app">
       <header className="flex items-center justify-between px-6 pt-4">
@@ -26,7 +39,7 @@ export function AppShell() {
       <main className="px-6 pb-28 pt-4">
         <Outlet />
       </main>
-      <BottomNav />
+      <BottomNav badge={unread} />
     </div>
   );
 }
