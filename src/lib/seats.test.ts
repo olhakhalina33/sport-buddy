@@ -22,5 +22,6 @@ describe('initials', () => {
   it('ім’я + прізвище', () => expect(initials('Марія Шевчук')).toBe('МШ'));
   it('скорочення з крапкою', () => expect(initials('Андрій К.')).toBe('АК'));
   it('одне слово', () => expect(initials('ольга')).toBe('О'));
-  it('порожнє', () => expect(initials('  ')).toBe('?'));
+  it('BUG-US2.4-AVATAR-01: ім’я з пробілів — не «?»', () => expect(initials('   ')).toBe(''));
+  it('BUG-US2.4-AVATAR-01: ім’я без літер — не «?»', () => expect(initials('007')).toBe('0'));
 });

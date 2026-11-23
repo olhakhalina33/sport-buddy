@@ -43,4 +43,9 @@ describe('TrainingPage', () => {
     renderPage();
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Учасники · Місць немає');
   });
+  it('BUG-US2.4-AVATAR-01: ім’я Організатора з пробілів → «—»', () => {
+    setTraining({ organizer: { name: '   ', rating: null, avatar_url: null, level: 'beginner' } });
+    renderPage();
+    expect(screen.getByText('Організатор').nextElementSibling).toHaveTextContent(/^—$/);
+  });
 });

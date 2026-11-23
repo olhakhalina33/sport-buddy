@@ -9,11 +9,14 @@ export function seatsLabel(capacity: number, confirmedCount: number): string {
   return free === 0 ? 'Місць немає' : `Вільно: ${free} з ${capacity}`;
 }
 
-/** Ініціали для аватара: «Марія Шевчук» → «МШ», «Андрій К.» → «АК». */
+/**
+ * Ініціали для аватара: «Марія Шевчук» → «МШ», «Андрій К.» → «АК».
+ * Без літер — перший непробільний символ («007» → «0»), для порожнього імені — порожній рядок (не «?»).
+ */
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const letters = parts.slice(0, 2).map((p) => p.replace(/[^\p{L}]/gu, '').charAt(0));
-  return letters.join('').toUpperCase() || '?';
+  return letters.join('').toUpperCase() || (parts[0]?.charAt(0) ?? '');
 }
 
 /** Стабільний колір аватара (teal/orange) за іменем. */

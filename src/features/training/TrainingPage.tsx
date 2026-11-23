@@ -131,7 +131,7 @@ export function TrainingPage() {
         <div>
           <dt className="text-p font-normal text-muted">Організатор</dt>
           <dd className="mt-1 text-[16px] font-bold">
-            {t.organizer?.name ?? '—'}
+            {t.organizer?.name?.trim() || '—'}
             {t.organizer?.rating != null && ` · ${t.organizer.rating.toFixed(1).replace('.', ',')}`}
           </dd>
         </div>
