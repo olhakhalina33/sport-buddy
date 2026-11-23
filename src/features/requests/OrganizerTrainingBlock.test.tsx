@@ -34,4 +34,8 @@ describe('OrganizerTrainingBlock', () => {
     expect(status).not.toHaveClass('sr-only');
     expect(status).toHaveClass('text-warning');
   });
+  it('BUG-US2.4-TEXT-01: кнопка «Видалити з тренування»', () => {
+    renderBlock();
+    expect(screen.getByRole('button', { name: /Видалити з тренування Олена/ })).toHaveTextContent('Видалити з тренування');
+  });
 });

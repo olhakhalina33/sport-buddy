@@ -15,7 +15,7 @@ interface Props {
   onChanged: () => Promise<void>;
 }
 
-/** Кнопка «Записатися»/«Ви записані»/«Місць немає» + скасування (US 2.3). */
+/** Кнопка «Забронювати слот»/«Ви записані»/«Місць немає» + скасування (US 2.3). */
 export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

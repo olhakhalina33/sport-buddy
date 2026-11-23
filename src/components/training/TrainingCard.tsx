@@ -5,7 +5,7 @@ import { LEVEL_LABEL, SPORT_LABEL } from '../../lib/labels';
 import { seatsLabel } from '../../lib/seats';
 import type { TrainingListItem } from '../../types';
 
-/** Картка у списку: назва, вид спорту, дата·рівень, місце, «Вільно N з M»/«Місць немає», аватарки. */
+/** Картка у списку: назва, вид спорту, дата·рівень, місце, «Вільно: N з M»/«Місць немає», аватарки. */
 export function TrainingCard({ t, index = 0 }: { t: TrainingListItem; index?: number }) {
   const full = t.free_seats <= 0;
   const occupied = t.confirmed_count + 1;

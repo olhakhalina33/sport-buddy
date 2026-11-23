@@ -109,7 +109,6 @@ export function TrainingPage() {
   const { training: t, participants, myStatus } = state.data;
   const free = freeSeats(t.capacity, t.confirmed_count);
   const isOrganizer = t.organizer_id === user.id;
-  const occupied = t.confirmed_count + 1;
 
   return (
     <article className="flex flex-col gap-5 animate-fade-up">
@@ -140,8 +139,8 @@ export function TrainingPage() {
 
       <section aria-labelledby="participants-h">
         <h2 id="participants-h" className={`text-h5 ${free === 0 ? 'text-faint' : ''}`} aria-live="polite">
-          {free === 0 ? `Учасники · місць немає (${occupied} з ${t.capacity})` : (
-            <>Учасники · вільно <span key={free} className="inline-block animate-bump">{free}</span> з {t.capacity}</>
+          {free === 0 ? 'Учасники · Місць немає' : (
+            <>Учасники · Вільно: <span key={free} className="inline-block animate-bump">{free}</span> з {t.capacity}</>
           )}
         </h2>
         <div className="mt-3">

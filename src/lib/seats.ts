@@ -3,10 +3,10 @@ export function freeSeats(capacity: number, confirmedCount: number): number {
   return Math.max(0, capacity - 1 - confirmedCount);
 }
 
-/** «Вільно N з M» або «Місць немає». */
+/** «Вільно: N з M» або «Місць немає». */
 export function seatsLabel(capacity: number, confirmedCount: number): string {
   const free = freeSeats(capacity, confirmedCount);
-  return free === 0 ? 'Місць немає' : `Вільно ${free} з ${capacity}`;
+  return free === 0 ? 'Місць немає' : `Вільно: ${free} з ${capacity}`;
 }
 
 /** Ініціали для аватара: «Марія Шевчук» → «МШ», «Андрій К.» → «АК». */

@@ -104,8 +104,8 @@ export function OrganizerTrainingBlock({ training: t, onChanged }: Props) {
                 <div className="flex items-center justify-between gap-3">
                   <Person b={b} />
                   {confirmRemove !== b.id && (
-                    <Button variant="danger-link" onClick={() => setConfirmRemove(b.id)} disabled={busyId !== null} aria-label={`Видалити ${b.user.name}`}>
-                      Видалити
+                    <Button variant="danger-link" onClick={() => setConfirmRemove(b.id)} disabled={busyId !== null} aria-label={`Видалити з тренування ${b.user.name}`}>
+                      Видалити з тренування
                     </Button>
                   )}
                 </div>
