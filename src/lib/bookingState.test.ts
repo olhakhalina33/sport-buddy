@@ -4,7 +4,7 @@ import { cardAction, levelWarning } from './bookingState';
 const base = { isOrganizer: false, myStatus: null, capacity: 10, confirmedCount: 3, started: false, cancelled: false };
 
 describe('кнопка картки (US 2.3)', () => {
-  it('є місця → «Записатися»', () => expect(cardAction(base)).toEqual({ kind: 'join', label: 'Записатися' }));
+  it('є місця → «Забронювати слот»', () => expect(cardAction(base)).toEqual({ kind: 'join', label: 'Забронювати слот' }));
   it('SPEC: 0 вільних → неактивна «Місць немає»', () =>
     expect(cardAction({ ...base, confirmedCount: 9 })).toMatchObject({ kind: 'disabled', label: 'Місць немає' }));
   it('SPEC: Організатор на власне → заборонено', () =>

@@ -7,7 +7,7 @@ import { EmptyState, ErrorState } from '../../components/ui/States';
 import { TrainingCard } from '../../components/training/TrainingCard';
 import { LocationPicker } from './LocationPicker';
 import { searchTrainings } from '../../api/trainings';
-import { EMPTY_FILTERS, foundLabel, hasActiveFilters, resolveFilters, serializeFilters, toggle } from '../../lib/filters';
+import { EMPTY_FILTERS, canonicalParams, foundLabel, hasActiveFilters, resolveFilters, serializeFilters, toggle } from '../../lib/filters';
 import { LEVELS, LEVEL_LABEL, SPORTS, SPORT_LABEL, T } from '../../lib/labels';
 import { useAuth } from '../../hooks/useAuth';
 import type { SearchFilters, TrainingListItem } from '../../types';
@@ -16,11 +16,18 @@ type State = { status: 'loading' } | { status: 'error'; message: string } | { st
 
 export function SearchPage() {
   const [params, setParams] = useSearchParams();
-  const { profile } = useAuth();
+  const { profile, loading: authLoading } = useAuth();
   const profileLevel = profile?.level;
   const filters = useMemo(() => resolveFilters(params, profileLevel), [params, profileLevel]);
   const [state, setState] = useState<State>({ status: 'loading' });
   const [reload, setReload] = useState(0);
+
+  // Застосовані фільтри (зокрема рівень із профілю) завжди видно в URL; невалідні параметри відкидаються.
+  useEffect(() => {
+    if (authLoading) return; // чекаємо профіль, інакше зафіксуємо level=all замість рівня з профілю
+    const canonical = canonicalParams(params, profileLevel);
+    if (canonical) setParams(canonical, { replace: true });
+  }, [authLoading, params, profileLevel, setParams]);
 
   const update = useCallback(
     (patch: Partial<SearchFilters>) => setParams(serializeFilters({ ...filters, ...patch }), { replace: true }),

@@ -15,16 +15,20 @@ interface Props {
   onChanged: () => Promise<void>;
 }
 
-/** Кнопка «Записатися»/«Ви записані»/«Місць немає» + скасування (US 2.3). */
+/** Кнопка «Забронювати слот»/«Ви записані»/«Місць немає» + скасування (US 2.3). */
 export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  // Повідомлення актуальне лише для статусів validFor (статус на момент дії + очікуваний результат);
+  // інша зміна статусу (зокрема через realtime) його скидає.
+  const [notice, setNotice] = useState<{ text: string; validFor: (BookingStatus | null)[] } | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [confirmLevel, setConfirmLevel] = useState(false);
   const { profile } = useAuth();
   const warning = levelWarning(training.level, profile?.level);
   const inFlight = useRef(false); // захист від подвійного кліку ще до перерендеру
+
+  if (notice && !notice.validFor.includes(myStatus)) setNotice(null);
 
   const action = cardAction({
     isOrganizer,
@@ -56,14 +60,17 @@ export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Pro
     run(async () => {
       setConfirmLevel(false);
       const status = await bookTraining(training.id);
-      if (status === 'pending') setNotice('Заявку надіслано. Очікуйте рішення Організатора.');
+      if (status === 'pending') setNotice({ text: 'Заявку надіслано. Очікуйте рішення Організатора.', validFor: [myStatus, 'pending'] });
     });
 
   const cancel = () =>
     run(async () => {
       const r = await cancelBooking(training.id);
       setConfirmCancel(false);
-      setNotice(r.late ? 'Заявку скасовано. Зверніть увагу: до початку менше 12 годин.' : 'Заявку скасовано.');
+      setNotice({
+        text: r.late ? 'Заявку скасовано. Зверніть увагу: до початку менше 12 годин.' : 'Заявку скасовано.',
+        validFor: [myStatus, null, 'cancelled'],
+      });
     });
 
   const late = !isFreeCancel(training.starts_at);
@@ -109,7 +116,7 @@ export function BookingPanel({ training, isOrganizer, myStatus, onChanged }: Pro
 
       {notice && (
         <p role="status" className="text-p text-accent">
-          {notice}
+          {notice.text}
         </p>
       )}
       {error && (
