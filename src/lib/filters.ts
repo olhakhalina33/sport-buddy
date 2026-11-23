@@ -30,20 +30,31 @@ export function parseFilters(params: URLSearchParams): SearchFilters {
   };
 }
 
-/** Параметри URL, наявність яких означає «фільтри задано явно». */
-const FILTER_KEYS = ['sport', 'level', 'lat', 'lng'] as const;
-
-export function hasUrlFilters(params: URLSearchParams): boolean {
-  return FILTER_KEYS.some((k) => params.has(k));
+/**
+ * Чи задано фільтри в URL явно: є хоча б одне валідне значення або `level=all` (скинуті фільтри).
+ * Невалідні значення (`?sport=invalid`) не рахуються — такий URL еквівалентний «/».
+ */
+function hasExplicitFilters(params: URLSearchParams, parsed: SearchFilters): boolean {
+  return hasActiveFilters(parsed) || params.get('level') === 'all';
 }
 
 /**
- * Фільтри екрана пошуку: якщо в URL є будь-який фільтр — URL має пріоритет,
+ * Фільтри екрана пошуку: якщо в URL є валідний фільтр — URL має пріоритет,
  * інакше початковий рівень береться з профілю.
  */
 export function resolveFilters(params: URLSearchParams, profileLevel: SkillLevel | null | undefined): SearchFilters {
-  if (hasUrlFilters(params) || !profileLevel) return parseFilters(params);
+  const parsed = parseFilters(params);
+  if (hasExplicitFilters(params, parsed) || !profileLevel) return parsed;
   return { ...EMPTY_FILTERS, levels: [profileLevel] };
+}
+
+/**
+ * Канонічний URL для застосованих фільтрів (включно з рівнем із профілю, без невалідних значень).
+ * Повертає null, якщо поточний URL уже канонічний.
+ */
+export function canonicalParams(params: URLSearchParams, profileLevel: SkillLevel | null | undefined): URLSearchParams | null {
+  const canonical = serializeFilters(resolveFilters(params, profileLevel));
+  return canonical.toString() === params.toString() ? null : canonical;
 }
 
 /**

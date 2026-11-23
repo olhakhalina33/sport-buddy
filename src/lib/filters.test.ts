@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_RADIUS_KM, EMPTY_FILTERS, foundLabel, parseFilters, resolveFilters, serializeFilters, toRpcParams, toggle } from './filters';
+import { DEFAULT_RADIUS_KM, EMPTY_FILTERS, canonicalParams, foundLabel, parseFilters, resolveFilters, serializeFilters, toRpcParams, toggle } from './filters';
 
 const parse = (q: string) => parseFilters(new URLSearchParams(q));
 
@@ -76,5 +76,25 @@ describe('resolveFilters — рівень з профілю', () => {
   });
   it('без профілю → звичайний розбір URL', () => {
     expect(resolveFilters(q(''), null)).toEqual(EMPTY_FILTERS);
+  });
+});
+
+describe('canonicalParams — URL відображає застосовані фільтри (BUG-US2.1-URL-01, BUG-US2.1-PARAM-01)', () => {
+  const q = (s: string) => new URLSearchParams(s);
+  it('«/» з рівнем із профілю → рівень пишеться в URL', () => {
+    expect(canonicalParams(q(''), 'intermediate')?.toString()).toBe('level=intermediate');
+  });
+  it('невалідне значення відкидається, рівень із профілю застосовується', () => {
+    expect(resolveFilters(q('sport=invalid'), 'intermediate')).toEqual(resolveFilters(q(''), 'intermediate'));
+    expect(canonicalParams(q('sport=invalid'), 'intermediate')?.toString()).toBe('level=intermediate');
+  });
+  it('однакові ефективні фільтри → однаковий URL', () => {
+    const a = canonicalParams(q('sport=run,chess&level=pro,beginner'), null)!;
+    const b = canonicalParams(q('level=beginner&sport=run'), null)!;
+    expect(a.toString()).toBe(b.toString());
+  });
+  it('канонічний URL не змінюється', () => {
+    expect(canonicalParams(q('sport=run&level=beginner'), 'advanced')).toBeNull();
+    expect(canonicalParams(q('level=all'), 'advanced')).toBeNull();
   });
 });
