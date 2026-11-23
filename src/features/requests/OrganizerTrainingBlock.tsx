@@ -4,7 +4,7 @@ import { Avatar } from '../../components/ui/Avatar';
 import { Button } from '../../components/ui/Button';
 import { decideBooking, removeParticipant, type OrganizerTraining } from '../../api/organizer';
 import { formatWhen } from '../../lib/dates';
-import { LEVEL_LABEL, T } from '../../lib/labels';
+import { BOOKING_STATUS_LABEL, LEVEL_LABEL, T } from '../../lib/labels';
 import { freeSeats } from '../../lib/seats';
 import type { RequestItem } from '../../types';
 
@@ -74,8 +74,10 @@ export function OrganizerTrainingBlock({ training: t, onChanged }: Props) {
       {pending.length === 0 && <p className="text-p font-normal text-muted">Нових заявок немає.</p>}
       {pending.map((b) => (
         <article key={b.id} className="flex flex-col gap-4 rounded-2xl border border-line-off bg-surface p-5">
-          <Person b={b} />
-          <p className="sr-only">Статус: Очікує рішення</p>
+          <div className="flex items-center justify-between gap-3">
+            <Person b={b} />
+            <span className="shrink-0 text-ps font-bold text-warning">{BOOKING_STATUS_LABEL.pending}</span>
+          </div>
           <div className="flex flex-wrap items-center gap-4">
             <Button
               onClick={() => act(b.id, () => decideBooking(b.id, true))}
